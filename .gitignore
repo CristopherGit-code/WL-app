@@ -1,0 +1,14 @@
+.venv
+__pycache__
+.env
+.gradio
+Call reports
+inno_wallet
+json
+md
+
+# db
+app/db/config
+
+legacy
+uv.lock
