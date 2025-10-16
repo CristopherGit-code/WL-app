@@ -12,3 +12,5 @@ app/db/config
 
 legacy
 uv.lock
+
+node_modules
