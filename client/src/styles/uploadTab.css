@@ -1,0 +1,159 @@
+/* Upload Tab Styles */
+.upload-container {
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background-color: #312d2a;
+}
+
+.upload-header {
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.upload-header h2 {
+  font-size: 2rem;
+  color: #f0cc71;
+  margin-bottom: 0.5rem;
+}
+
+.upload-header p {
+  color: #eae9e7;
+  font-size: 1.1rem;
+}
+
+.upload-form {
+  background-color: #1a1816;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid #04232d;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #f0cc71;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.file-label {
+  display: inline-block;
+  background-color: #04232d;
+  color: #f0cc71;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.file-label:hover {
+  background-color: #f0cc71;
+  color: #04232d;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #312d2a;
+  border: 2px solid #04232d;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-icon {
+  font-size: 2rem;
+}
+
+.file-details {
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #f0efed;
+  margin-bottom: 0.25rem;
+}
+
+.file-size {
+  font-size: 0.9rem;
+  color: #eae9e7;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #04232d;
+  border-radius: 8px;
+  background-color: #312d2a;
+  color: #f0efed;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #f0cc71;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: #04232d;
+  color: #f0cc71;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background-color: #f0cc71;
+  color: #04232d;
+  transform: translateY(-2px);
+}
+
+.upload-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  background-color: #312d2a;
+  color: #eae9e7;
+  border: 2px solid #04232d;
+}
+
+.upload-status.success {
+  background-color: #f0cc71;
+  color: #04232d;
+  border-color: #04232d;
+}

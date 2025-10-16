@@ -1,0 +1,175 @@
+/* Sidebar Styles */
+.sidebar {
+  width: 520px;
+  background-color: #1a1816;
+  border-right: 2px solid #04232d;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  position: relative;
+  z-index: 50;
+}
+
+.sidebar:not(.open) {
+  transform: translateX(-100%);
+  position: absolute;
+  height: 100%;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.filters-section {
+  padding: 1rem;
+  border-bottom: 2px solid #04232d;
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f0cc71;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  margin-bottom: 1.25rem;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 500;
+  color: #eae9e7;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #04232d;
+  border-radius: 6px;
+  background-color: #312d2a;
+  color: #f0efed;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #f0cc71;
+}
+
+.date-range {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-separator {
+  text-align: center;
+  color: #eae9e7;
+  font-size: 0.85rem;
+}
+
+.date-input {
+  width: 100%;
+}
+
+/* Documents Section */
+.documents-section {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: visible;
+}
+
+.documents-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f0cc71;
+  margin-bottom: 1rem;
+}
+
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #312d2a;
+  border: 2px solid #04232d;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.document-item:hover {
+  background-color: #3d3935;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.document-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #f0cc71;
+}
+
+.document-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.document-name {
+  display: block;
+  font-weight: 500;
+  color: #f0efed;
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #eae9e7;
+}
+
+.download-btn {
+  background-color: #04232d;
+  color: #f0cc71;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.download-btn:hover {
+  background-color: #f0cc71;
+  color: #04232d;
+  transform: scale(1.1);
+}
