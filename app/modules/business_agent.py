@@ -1,6 +1,6 @@
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
-from app.util.model.oci_openai_client import LLM_Open_Client
+from util.model.oci_openai_client import LLM_Open_Client
 import logging
 
 logger = logging.getLogger(name=f'{__name__}')

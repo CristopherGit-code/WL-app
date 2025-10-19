@@ -1,8 +1,8 @@
-from app.util.config.config import Settings
-from app.util.file_handler import File_handlder
-from app.modules.business_agent import BusinessAgent
-from app.modules.search_agent import SearchAgent
-from app.db.db import DataBase
+from util.config.config import Settings
+from util.file_handler import File_handlder
+from modules.business_agent import BusinessAgent
+from modules.search_agent import SearchAgent
+from db.db import DataBase
 import gradio as gr
 import logging
 import uuid
@@ -66,7 +66,7 @@ class UI:
         return response
     
     def get_client_manual_filter(self,year,type,region,customer,product, prompt:str, user_id, show_content):
-        if year == "All":
+        if year == "All" or year == '':
             year = None
         else:
             year = int(year)

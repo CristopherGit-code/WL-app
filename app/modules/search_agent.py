@@ -1,4 +1,4 @@
-from app.util.model.oci_openai_client import LLM_Open_Client
+from util.model.oci_openai_client import LLM_Open_Client
 from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel
 from typing import Literal, List

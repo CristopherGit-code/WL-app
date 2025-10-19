@@ -83,6 +83,28 @@
   margin-bottom: 0.5rem;
 }
 
+.message-content .md-content {
+  padding: 0.5rem;
+}
+
+.message-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.message-content th,
+.message-content td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.message-content th {
+  background-color: #04232d;
+  font-weight: 600;
+}
+
 .message-time {
   font-size: 0.75rem;
   opacity: 0.7;

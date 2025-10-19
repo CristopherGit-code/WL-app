@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-from app.util.config.config import Settings
+from util.config.config import Settings
 import oracledb
 import json
 import logging

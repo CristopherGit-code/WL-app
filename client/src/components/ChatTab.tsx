@@ -2,7 +2,13 @@
 
 import type React from "react"
 import { useState } from "react"
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import '../styles/chatTab.css'
+
+interface ChatProps {
+  userID: string
+}
 
 interface Message {
   id: string
@@ -11,12 +17,7 @@ interface Message {
   timestamp: Date
 }
 
-interface ChatTabProps {
-  selectedDocuments: string[]
-}
-
-export default function ChatTab({ selectedDocuments }: ChatTabProps) {
-  console.log(selectedDocuments)
+export default function ChatTab({ userID }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -26,8 +27,41 @@ export default function ChatTab({ selectedDocuments }: ChatTabProps) {
     },
   ])
   const [inputValue, setInputValue] = useState("")
+  const SERVER_URL = "http://localhost:8000"
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const getChatResponse = async (inputValue: Message): Promise<string> => {
+    const prompt = inputValue.content
+    const URL = SERVER_URL + "/get_client_analysis"
+
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          sys_instructions: "",
+          userID: userID
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Server query error, try manual filters")
+      }
+
+      const data = await response.json()
+
+      console.log(data.response)
+
+      return data.response
+    } catch (error) {
+      console.error("Error getting query filters", error)
+      return "Error in getting the response from the server"
+    }
+  }
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!inputValue.trim()) return
@@ -42,17 +76,16 @@ export default function ChatTab({ selectedDocuments }: ChatTabProps) {
     setMessages([...messages, userMessage])
     setInputValue("")
 
-    // Simulate AI response
-    // TODO: Send fetch to server
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `I received your message: "${inputValue}". ${selectedDocuments.length > 0 ? `I'm analyzing ${selectedDocuments.length} selected document(s).` : "Please select documents from the sidebar to get specific answers."}`,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-    }, 1000)
+    const chatResponse = await getChatResponse(userMessage)
+
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: chatResponse,
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, assistantMessage])
   }
 
   return (
@@ -69,7 +102,9 @@ export default function ChatTab({ selectedDocuments }: ChatTabProps) {
           <div key={message.id} className={`message ${message.role}`}>
             <div className="message-avatar">{message.role === "user" ? "U" : "AI"}</div>
             <div className="message-content">
-              <p>{message.content}</p>
+              <div className="md-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+              </div>
               <span className="message-time">{message.timestamp.toLocaleTimeString()}</span>
             </div>
           </div>

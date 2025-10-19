@@ -3,58 +3,113 @@
 import { useState, useEffect } from "react"
 import '../styles/sidebar.css'
 
-interface Document {
-  id: string
-  name: string
-  date: string
-  category: string
-  size: string
+interface Filters {
+  uniqueYears: string[]
+  uniqueType: string[]
+  uniqueRegion: string[]
+  uniqueCustomer: string[]
 }
 
 interface SidebarProps {
   isOpen: boolean
-  selectedDocuments: string[]
-  setSelectedDocuments: (docs: string[]) => void
+  currentAvailableFilters: Filters
+  userID: string
 }
 
-export default function Sidebar({ isOpen, selectedDocuments, setSelectedDocuments }: SidebarProps) {
+type documentData = [string, string]
+
+interface DocumentsFromDB {
+  previewList: documentData[]
+}
+
+export default function Sidebar({ isOpen, currentAvailableFilters, userID }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [type, setType] = useState("")
+  const [region, setRegion] = useState("")
+  const [customer, setCustomer] = useState("")
+  const [product, setProduct] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
+  const [documentList, setDocumentList] = useState<string[][]>([[]])
 
-  // Mock documents data
-  const mockDocuments: Document[] = [
-    { id: "1", name: "Project Proposal.pdf", date: "2024-01-15", category: "proposal", size: "2.3 MB" },
-    { id: "2", name: "Technical Specs.docx", date: "2024-01-20", category: "technical", size: "1.8 MB" },
-    { id: "3", name: "Budget Report.xlsx", date: "2024-02-01", category: "financial", size: "890 KB" },
-    { id: "4", name: "Meeting Notes.pdf", date: "2024-02-10", category: "notes", size: "450 KB" },
-    { id: "5", name: "Design Mockups.pdf", date: "2024-02-15", category: "design", size: "5.2 MB" },
-  ]
+  const SERVER_URL = "http://localhost:8000"
 
-  const filteredDocuments = mockDocuments.filter((doc) => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter
-    const matchesDateRange = (!startDate || doc.date >= startDate) && (!endDate || doc.date <= endDate)
-    return matchesSearch && matchesCategory && matchesDateRange
-  })
+  const searchByQuery = async () => {
+    if (!searchQuery.trim()) return;
 
-  useEffect(() => {
-    const filteredIds = filteredDocuments.map((doc)=>doc.id)
-    setSelectedDocuments(filteredIds)
-  }, [searchQuery,categoryFilter,startDate,endDate])
+    const prompt = searchQuery
+    const URL = SERVER_URL + "/get_client_filters"
 
-  const handleCheckboxChange = (docId: string) => {
-    if (selectedDocuments.includes(docId)) {
-      setSelectedDocuments(selectedDocuments.filter((id) => id !== docId))
-    } else {
-      setSelectedDocuments([...selectedDocuments, docId])
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          userID: userID
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Server query error, try manual filters")
+      }
+
+      const data: DocumentsFromDB = await response.json()
+
+      console.log(data.previewList)
+      setDocumentList(data.previewList)
+    } catch (error) {
+      console.error("Error getting query filters", error)
     }
   }
 
-  const handleDownload = (doc: Document) => {
+  const handleFilters = async () => {
+    const URL = SERVER_URL + "/get_client_manual_filters"
+
+    const year = startDate
+
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          year: year,
+          type: type,
+          region: region,
+          customer: customer,
+          product: product,
+          userID: userID
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Server query error, try manual filters")
+      }
+
+      const data: DocumentsFromDB = await response.json()
+
+      console.log(data.previewList)
+      setDocumentList(data.previewList)
+    } catch (error) {
+      console.error("Error getting query filters", error)
+    }
+  }
+
+  const handleCheckboxChange = (docId: string) => {
+    // if (selectedDocuments.includes(docId)) {
+    //   setSelectedDocuments(selectedDocuments.filter((id) => id !== docId))
+    // } else {
+    //   setSelectedDocuments([...selectedDocuments, docId])
+    // }
+  }
+
+  const handleDownload = (doc: string[]) => {
     // Simulate download
-    alert(`Downloading ${doc.name}`)
+    alert(`Downloading ${doc[0]}`)
   }
 
   return (
@@ -65,87 +120,126 @@ export default function Sidebar({ isOpen, selectedDocuments, setSelectedDocument
 
           <div className="filter-group">
             <label htmlFor="search">Search</label>
-            <input
-              id="search"
-              type="text"
-              className="filter-input"
-              placeholder="Search documents..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              className="filter-select"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-            >
-              <option value="all">All Categories</option>
-              <option value="proposal">Proposal</option>
-              <option value="technical">Technical</option>
-              <option value="financial">Financial</option>
-              <option value="notes">Notes</option>
-              <option value="design">Design</option>
-            </select>
+            <form action={searchByQuery}>
+              <input
+                id="search"
+                type="text"
+                className="filter-input"
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </div>
 
           <div className="filter-group">
             <label htmlFor="start-date">Date Range</label>
             <div className="date-range">
-              <input
-                id="start-date"
-                type="date"
-                className="filter-input date-input"
+              <select
+                id="category"
+                className="filter-select"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-              />
-              <span className="date-separator">to</span>
-              <input
-                id="end-date"
-                type="date"
-                className="filter-input date-input"
+              >
+                {currentAvailableFilters.uniqueYears.map((year,i)=>(
+                  <option value={year} key={i}>{year}</option>
+                ))}
+              </select>
+              {/* <span className="date-separator">to</span>
+              <select
+                id="category"
+                className="filter-select"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-              />
+              >
+                {currentAvailableFilters.uniqueYears.map((year,i)=>(
+                  <option value={year} key={i}>{year}</option>
+                ))}
+              </select> */}
             </div>
           </div>
+
+          <div className="filter-group">
+            <label htmlFor="category">Type</label>
+            <select
+              id="category"
+              className="filter-select"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              {currentAvailableFilters.uniqueType.map((year,i)=>(
+                  <option value={year} key={i}>{year}</option>
+                ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="category">Region</label>
+            <select
+              id="category"
+              className="filter-select"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+            >
+              {currentAvailableFilters.uniqueRegion.map((year,i)=>(
+                  <option value={year} key={i}>{year}</option>
+                ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="category">Customer</label>
+            <select
+              id="category"
+              className="filter-select"
+              value={customer}
+              onChange={(e) => setCustomer(e.target.value)}
+            >
+              {currentAvailableFilters.uniqueCustomer.map((year,i)=>(
+                  <option value={year} key={i}>{year}</option>
+                ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="search">Product</label>
+            <input
+              id="search"
+              type="text"
+              className="filter-input"
+              placeholder="Products to search..."
+              value={product}
+              onChange={(e) => setProduct(e.target.value)}
+            />
+          </div>
+
+          <button onClick={handleFilters} className="send-btn">Apply filters</button>
         </div>
 
         <div className="documents-section">
-          <h3 className="documents-title">Documents ({filteredDocuments.length})</h3>
+          <h3 className="documents-title">Documents ({documentList.length})</h3>
 
           <div className="documents-list">
-            {filteredDocuments.map((doc) => (
-              <div key={doc.id} className="document-item">
-                <div className="document-checkbox">
+            {documentList.map((doc, i) => (
+              <div key={i} className="document-item">
+                {/* <div className="document-checkbox">
                   <input
                     type="checkbox"
-                    id={`doc-${doc.id}`}
-                    checked={selectedDocuments.includes(doc.id)}
-                    onChange={() => handleCheckboxChange(doc.id)}
+                    id={`doc-${i}`}
+                    checked={selectedDocuments.includes("1")}
+                    onChange={() => handleCheckboxChange("1")}
                   />
-                </div>
-
+                </div> */}
                 <div className="document-info">
-                  <label htmlFor={`doc-${doc.id}`} className="document-name">
-                    {doc.name}
-                  </label>
-                  <div className="document-meta">
-                    <span className="document-date">{doc.date}</span>
-                    <span className="document-size">{doc.size}</span>
-                  </div>
+                  <label htmlFor={`doc-${i}`} className="document-name">{doc[0]}</label>
                 </div>
-
-                <button
+                {/* <button
                   className="download-btn"
                   onClick={() => handleDownload(doc)}
-                  aria-label={`Download ${doc.name}`}
+                  aria-label={`Download ${doc[0]}`}
                 >
                   ↓
-                </button>
+                </button> */}
               </div>
             ))}
           </div>
