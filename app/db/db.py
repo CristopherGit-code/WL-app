@@ -32,11 +32,11 @@ class DataBase:
         # logger.info('Connected to DB')
         return self._pool.acquire()
     
-    def _build_query(self,cols=['t.id','t.metadata.file_name'],year=None,type='',region='',customer='',product='') -> str:
+    def _build_query(self,cols=['t.id','t.metadata.file_name'],year=None,endYear=None,type='',region='',customer='',product='') -> str:
         search = ','.join(cols)
         query = rf"""SELECT {search} FROM WL_Calls t WHERE json_query(metadata, '$.report_date.date()?(@ > "2000-01-01T00:00")') IS NOT NULL"""
-        if year:
-            query = query + rf""" AND json_query(metadata, '$.report_date.date()?(@ > "{str(year)}-01-01T00:00")') IS NOT NULL AND json_query(metadata, '$.report_date.date()?(@ < "{str(year+1)}-01-01T00:00")') IS NOT NULL"""
+        if year and endYear:
+            query = query + rf""" AND json_query(metadata, '$.report_date.date()?(@ > "{str(year)}-01-01T00:00")') IS NOT NULL AND json_query(metadata, '$.report_date.date()?(@ < "{str(endYear)}-01-01T00:00")') IS NOT NULL"""
         if type:
             query = query + rf""" AND json_query(metadata, '$?(@.type == "{str(type)}")') IS NOT NULL"""
         if region:
@@ -83,12 +83,25 @@ class DataBase:
             self,
             name_list,
             year:int=None,
+            endYear:int=None,
             type:str=None,
             region:str=None,
             customer:str=None,
             product:str=None
         ):
-        db_query = self._build_query(name_list,year,type,region,customer,product)
+
+        if year != None and endYear != None:
+            if year == endYear:
+                endYear = year + 1
+            elif year > endYear:
+                year = 2010
+                endYear = 10
+        elif endYear != None and year == None:
+            year = 2010
+        elif endYear == None and year != None:
+            endYear = year + 10
+
+        db_query = self._build_query(name_list,year,endYear,type,region,customer,product)
         db_response = self._sort_files(db_query)
         lists = [list(group) for group in zip(*db_response)]
         return lists

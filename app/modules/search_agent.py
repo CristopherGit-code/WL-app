@@ -13,6 +13,7 @@ class Query_Fields(BaseModel):
     region: str = ''
     customer: str = ''
     product: str = ''
+    endYear: str = "All"
 
 class Search_Query(BaseModel):
     search_dict: List[Query_Fields]
@@ -34,6 +35,7 @@ class SearchAgent:
         - For 'region': Use the correct two-letter country code ONLY if a specific country, city, or state is stated. If no location is provided or it cannot be mapped to a country, set to '' (empty string).
         - For 'customer': Only use the customer's name if it is explicitly provided. Otherwise, set to '' (empty string).
         - For 'product': Only use the product name if it is explicitly provided. Otherwise, set to '' (empty string).
+        - For 'endYear': Use the format yyyy only if a specific year is clearly provided. If no year is mentioned, set to 'All'.
 
         NEVER fill a field with a default or inferred value except for 'year', which should be 'All' if missing.
 

@@ -46,13 +46,14 @@ async def get_client_manual_filters(request: Request):
     data = await request.json()
 
     year = data.get("year","").strip()
+    endYear = data.get("endYear","").strip()
     type = data.get("type","").strip()
     region = data.get("region","").strip()
     customer = data.get("customer","").strip()
     product = data.get("product","").strip()
     user_id = data.get("userID","")
 
-    preview_list = UI_manager.get_client_manual_filter(year,type,region,customer,product,"E",user_id,5)
+    preview_list = UI_manager.get_client_manual_filter(year,endYear,type,region,customer,product,"E",user_id,5)
 
     return {
         "previewList": preview_list

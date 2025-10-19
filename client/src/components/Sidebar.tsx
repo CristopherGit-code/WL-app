@@ -68,8 +68,6 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
   const handleFilters = async () => {
     const URL = SERVER_URL + "/get_client_manual_filters"
 
-    const year = startDate
-
     try {
       const response = await fetch(URL, {
         method: "POST",
@@ -77,7 +75,8 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          year: year,
+          year: startDate,
+          endYear: endDate,
           type: type,
           region: region,
           customer: customer,
@@ -109,7 +108,17 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
 
   const handleDownload = (doc: string[]) => {
     // Simulate download
-    alert(`Downloading ${doc[0]}`)
+    // alert(`Downloading ${doc[1]}`)
+    const blob = new Blob([doc[1]], { type: "text/markdown" })
+    const fileName = doc[0]+'.txt'
+
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = fileName
+
+    link.click()
+
+    URL.revokeObjectURL(link.href)
   }
 
   return (
@@ -145,7 +154,7 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
                   <option value={year} key={i}>{year}</option>
                 ))}
               </select>
-              {/* <span className="date-separator">to</span>
+              <span className="date-separator">to</span>
               <select
                 id="category"
                 className="filter-select"
@@ -155,7 +164,7 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
                 {currentAvailableFilters.uniqueYears.map((year,i)=>(
                   <option value={year} key={i}>{year}</option>
                 ))}
-              </select> */}
+              </select>
             </div>
           </div>
 
@@ -167,8 +176,8 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
               value={type}
               onChange={(e) => setType(e.target.value)}
             >
-              {currentAvailableFilters.uniqueType.map((year,i)=>(
-                  <option value={year} key={i}>{year}</option>
+              {currentAvailableFilters.uniqueType.map((type,i)=>(
+                  <option value={type} key={i}>{type}</option>
                 ))}
             </select>
           </div>
@@ -181,8 +190,8 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
               value={region}
               onChange={(e) => setRegion(e.target.value)}
             >
-              {currentAvailableFilters.uniqueRegion.map((year,i)=>(
-                  <option value={year} key={i}>{year}</option>
+              {currentAvailableFilters.uniqueRegion.map((region,i)=>(
+                  <option value={region} key={i}>{region}</option>
                 ))}
             </select>
           </div>
@@ -195,8 +204,8 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
               value={customer}
               onChange={(e) => setCustomer(e.target.value)}
             >
-              {currentAvailableFilters.uniqueCustomer.map((year,i)=>(
-                  <option value={year} key={i}>{year}</option>
+              {currentAvailableFilters.uniqueCustomer.map((customer,i)=>(
+                  <option value={customer} key={i}>{customer}</option>
                 ))}
             </select>
           </div>
@@ -233,13 +242,13 @@ export default function Sidebar({ isOpen, currentAvailableFilters, userID }: Sid
                 <div className="document-info">
                   <label htmlFor={`doc-${i}`} className="document-name">{doc[0]}</label>
                 </div>
-                {/* <button
+                <button
                   className="download-btn"
                   onClick={() => handleDownload(doc)}
                   aria-label={`Download ${doc[0]}`}
                 >
                   ↓
-                </button> */}
+                </button>
               </div>
             ))}
           </div>

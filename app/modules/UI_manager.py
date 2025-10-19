@@ -41,15 +41,12 @@ class UI:
     def _build_preview(self,titles,content,show_content:int):
         preview_list = []
         for file_name,file_content in zip(titles,content):
-            try:
-                preview_list.append((file_name,file_content[:show_content]))
-            except:
-                preview_list.append((file_name,file_content[:250]))
+            preview_list.append((file_name,file_content))
 
         return preview_list
     
-    def _manage_filter(self,year,type,region,customer,product, user_id, show_content:float):
-        responses = self.db.get_db_response(['t.metadata.file_name','t.content'],year,type,region,customer,product)
+    def _manage_filter(self,year,endYear,type,region,customer,product, user_id, show_content:float):
+        responses = self.db.get_db_response(['t.metadata.file_name','t.content'],year,endYear,type,region,customer,product)
         if not responses:
             self.merged_data = 'No data, retry'
             return ['No files found with that filter']
@@ -65,29 +62,40 @@ class UI:
         response = self.business_agent.provide_analysis(query,system_instructions,user_id)
         return response
     
-    def get_client_manual_filter(self,year,type,region,customer,product, prompt:str, user_id, show_content):
+    def get_client_manual_filter(self,year,endYear,type,region,customer,product, prompt:str, user_id, show_content):
         if year == "All" or year == '':
             year = None
         else:
             year = int(year)
-        preview_list = self._manage_filter(year,type,region,customer,product, user_id, show_content)
+
+        if endYear == "All" or endYear == '':
+            endYear = None
+        else:
+            endYear = int(endYear)
+
+        preview_list = self._manage_filter(year,endYear,type,region,customer,product, user_id, show_content)
         
         return preview_list
 
     def get_client_filter(self,year,type,region,customer,product, prompt:str, user_id, show_content):        
         r_dict =self.openai_client.build_dictionary(prompt)
         year_p = r_dict[0]
+        endYear_p = r_dict[5]
         if year_p == "All":
             year_p = None
         else:
             year_p = int(year_p)
+        if endYear_p == "All":
+            endYear_p = None
+        else:
+            endYear_p = int(endYear_p)
         type_p = r_dict[1]
         region_p = r_dict[2]
         region_p = region_p.upper()
 
         customer_p = r_dict[3]
         product_p = r_dict[4]
-        preview_list = self._manage_filter(year_p,type_p,region_p,customer_p,product_p, user_id, show_content)
+        preview_list = self._manage_filter(year_p,endYear_p,type_p,region_p,customer_p,product_p, user_id, show_content)
         
         return preview_list
     
